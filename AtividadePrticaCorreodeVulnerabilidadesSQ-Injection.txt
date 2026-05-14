@@ -1,0 +1,65 @@
+/\ Miguel Dias dos Santos /\
+LABORATÓRIO DIDÁTICO - SQL INJECTION
+
+Uso somente em localhost ou ambiente autorizado.
+
+COMO INSTALAR NO XAMPP
+1. Copie a pasta testesqlinjection_lab para:
+   C:\xampp\htdocs\testesqlinjection_lab
+
+2. Abra o XAMPP e inicie:
+   - Apache
+   - MySQL
+
+3. Acesse o phpMyAdmin:
+   http://localhost/phpmyadmin
+
+4. Importe o arquivo banco.sql
+
+5. Acesse:
+   http://localhost/testesqlinjection_lab/index.php
+
+USUÁRIOS DE TESTE
+admin@teste.com / 123456
+aluno@teste.com / 123456
+
+ROTEIRO RÁPIDO
+1. Login vulnerável:
+   admin@teste.com' OR '1'='1' #
+   senha: qualquer coisa
+
+2. Busca por ID:
+   1 OR 1=1
+   1 UNION SELECT 1, database(), user(), 'teste'
+
+3. Produtos:
+   %' OR '1'='1' #
+   %' UNION SELECT id, nome, email, perfil FROM usuarios #
+
+4. Exclusão:
+   1 OR 1=1
+
+5. Blind:
+   1' AND '1'='1' #
+   1' AND '1'='2' #
+
+Depois, repetir nas telas seguras e comparar.
+
+/Vulnerabilidades\
+
+No codigo login, o problema era no email e senha que eram inseridos direto no SQL. Isso permitia ataques como SQL Injection, além do uso de senhas em texto puro e 
+exposição da query na tela.
+No codigo busca por ID, o valor da URL era usado sem validação. Isso permitia alterar a consulta e fazer o sistema retornar dados indevidos, como todos os usuários.
+No codigo busca de produtos, o termo de pesquisa era concatenado no LIKE, permitindo manipular a consulta e até tentar acessar outras tabelas com técnicas de SQL Injection.
+
+/Correções\
+
+Nos três casos, a solução foi usar prepared statements, separando dados do SQL e impedindo injeção de comandos. Também foram adicionadas validações de entrada e proteção na saída com
+ htmlspecialchars. No login, ainda foi incluída criptografia de senha com password_hash() e verificação com password_verify().
+
+/Como executar\
+
+Instale o XAMPP, inicie Apache e MySQL, coloque o projeto na pasta htdocs, crie o banco no phpMyAdmin, configure o config.php e acesse pelo navegador em localhost/nome-do-projeto.
+As versões vulneráveis devem ser usadas apenas para estudo local.
+
+
